@@ -4,7 +4,8 @@ import { UserController } from './user.controller';
 import { SupabaseModule } from 'src/supabase/supabase.module';
 
 @Module({
-  providers: [UserService, SupabaseModule],
+  imports: [SupabaseModule],
+  providers: [UserService],
   controllers: [UserController],
 })
 export class UserModule {}

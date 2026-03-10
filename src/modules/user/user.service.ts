@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { UpdateUser } from 'src/interfaces/user.interface';
 
 @Injectable()
 export class UserService {
@@ -19,8 +20,8 @@ export class UserService {
     return data;
   }
 
-  async createUser() {
-    const { data, error } = await this.supabase.from('users').insert({});
+  async createUser(user: any) {
+    const { data, error } = await this.supabase.from('users').insert(user);
     return data;
   }
 
@@ -32,10 +33,10 @@ export class UserService {
     return data;
   }
 
-  async updateUser(id: string) {
+  async updateUser(id: string, user: UpdateUser) {
     const { data, error } = await this.supabase
       .from('users')
-      .update({})
+      .update(user)
       .eq('id', id);
     return data;
   }
