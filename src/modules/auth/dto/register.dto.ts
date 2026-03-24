@@ -16,14 +16,16 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @MinLength(6, { message: 'password must be at least 6 characters long' })
   password: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(6, {
-    message: 'Confirm password must be at least 6 characters long',
+    message: 'confirm password must be at least 6 characters long',
   })
-  @Match('password', { message: 'Passwords do not match' })
-  confirm_password: string;
+  @Match('password', {
+    message: 'confirm password does not match with password',
+  })
+  confirm_password?: string;
 }

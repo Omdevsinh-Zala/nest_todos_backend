@@ -3,7 +3,7 @@ export interface Register {
     last_name: string;
     email: string;
     password: string;
-    confirm_password: string;
+    ip_address?: string;
 }
 
 export interface Login {

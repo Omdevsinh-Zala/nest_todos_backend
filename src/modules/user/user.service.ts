@@ -20,12 +20,7 @@ export class UserService {
     return data;
   }
 
-  async createUser(user: any) {
-    const { data, error } = await this.supabase.from('users').insert(user);
-    return data;
-  }
-
-  async removeUser(id: string) {
+  async deleteUser(id: string) {
     const { data, error } = await this.supabase
       .from('users')
       .delete()

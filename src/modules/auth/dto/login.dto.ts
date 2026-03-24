@@ -7,6 +7,6 @@ export class LoginDto {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @MinLength(6, { message: 'password must be at least 6 characters long' })
   password: string;
 }
