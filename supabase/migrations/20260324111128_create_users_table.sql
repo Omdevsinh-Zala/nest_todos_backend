@@ -82,3 +82,7 @@ CREATE POLICY "Users can update own profile"
   ON public.users FOR UPDATE
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can delete own account"
+  ON public.users FOR DELETE
+  USING (auth.uid() = id);

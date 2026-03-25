@@ -37,7 +37,7 @@ export class UserService {
         .from('users')
         .delete()
         .eq('id', id);
-      return data;
+      return "User deleted successfully";
     } catch (error) {
       throw error;
     }
