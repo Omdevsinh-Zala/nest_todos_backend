@@ -1,38 +1,60 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SupabaseClient } from '@supabase/supabase-js';
 import { UpdateUser } from 'src/interfaces/user.interface';
+import { SupabaseService } from 'src/supabase/supabase';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('SUPABASE_CLIENT') private readonly supabase: SupabaseClient,
+    private readonly supabase: SupabaseService,
   ) {}
-  async getAllUsers() {
-    const { data, error } = await this.supabase.from('users').select('*');
-    return data;
+
+  USER_FIELDS =
+    'id, email, first_name, last_name, login_provider, providers, avatar_url, is_verified, created_at, updated_at';
+
+  // async getAllUsers() {
+  //   const { data, error } = await this.supabase.from('users').select(this.USER_FIELDS);
+  //   return data;
+  // }
+
+  async getUserData(token: string, id: string) {
+    try {
+      const { data, error } = await this.supabase
+        .forUser(token)
+        .from('users')
+        .select(this.USER_FIELDS)
+        .eq('id', id)
+        .single();
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async getUserById(id: string) {
-    const { data, error } = await this.supabase
-      .from('users')
-      .select('*')
-      .eq('id', id);
-    return data;
+  async deleteUser(token: string, id: string) {
+    try {
+      const { data, error } = await this.supabase
+        .forUser(token)
+        .from('users')
+        .delete()
+        .eq('id', id);
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async deleteUser(id: string) {
-    const { data, error } = await this.supabase
-      .from('users')
-      .delete()
-      .eq('id', id);
-    return data;
-  }
-
-  async updateUser(id: string, user: UpdateUser) {
-    const { data, error } = await this.supabase
-      .from('users')
-      .update(user)
-      .eq('id', id);
-    return data;
+  async updateUser(token: string, id: string, user: UpdateUser) {
+    try {
+      const { data, error } = await this.supabase
+        .forUser(token)
+        .from('users')
+        .update(user)
+        .eq('id', id)
+        .select(this.USER_FIELDS)
+        .single();
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 }

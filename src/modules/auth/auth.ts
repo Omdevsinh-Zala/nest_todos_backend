@@ -1,16 +1,16 @@
 import { Inject, Injectable, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Login, Register } from 'src/interfaces/auth.interface';
-import { SupabaseClient } from '@supabase/supabase-js';
 import { AppError } from 'src/common/errors/app.error';
 import { MailService } from './mail.service';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { SupabaseService } from 'src/supabase/supabase';
 
 @Injectable()
 export class Auth {
   constructor(
-    @Inject('SUPABASE_CLIENT') private readonly supabase: SupabaseClient,
+    private readonly supabase: SupabaseService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
   ) {}
@@ -21,6 +21,7 @@ export class Auth {
   async register(user: Register) {
     const hashedPassword = await this.hashPassword(user.password);
     const { data, error } = await this.supabase
+      .getAnon()
       .from('users')
       .insert({
         ...user,
@@ -46,6 +47,7 @@ export class Auth {
 
     // Insert Token
     const { error: tokenError } = await this.supabase
+      .getAnon()
       .from('verification_tokens')
       .insert({
         user_id: (data as any).id,
@@ -68,6 +70,7 @@ export class Auth {
 
   async login(user: Login) {
     const { data, error } = await this.supabase
+      .getAnon()
       .from('users')
       .select('*')
       .eq('email', user.email)
@@ -94,7 +97,7 @@ export class Auth {
 
     // Generate JWT tokens
     const payload = { sub: safeUser.id, email: safeUser.email };
-    const access_token = await this.jwtService.signAsync(payload, {
+    const access_token = await this.jwtService.signAsync({...payload, role: 'authenticated'}, {
       expiresIn: '1h',
     });
     const refresh_token = await this.jwtService.signAsync(
@@ -114,7 +117,7 @@ export class Auth {
       }
 
       const userPayload = { sub: payload.sub, email: payload.email };
-      const access_token = await this.jwtService.signAsync(userPayload, {
+      const access_token = await this.jwtService.signAsync({...userPayload, role: 'authenticated'}, {
         expiresIn: '1h',
       });
       const refresh_token = await this.jwtService.signAsync(
@@ -133,7 +136,7 @@ export class Auth {
 
   async verifyEmailToken(token: string) {
     // Check if token exists, is pending, and not expired
-    const { data: verified, error } = await this.supabase.rpc(
+    const { data: verified, error } = await this.supabase.getAnon().rpc(
       'verify_email_token',
       { p_token: token },
     );
@@ -151,7 +154,7 @@ export class Auth {
   }
 
   async signUp() {
-    const { data, error } = await this.supabase.auth.signInWithOAuth({
+    const { data, error } = await this.supabase.getAnon().auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: process.env.BACKEND_CALLBACK_URL,
@@ -168,7 +171,7 @@ export class Auth {
   }
 
   async signIn() {
-    const { data, error } = await this.supabase.auth.signInWithOAuth({
+    const { data, error } = await this.supabase.getAnon().auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: process.env.BACKEND_CALLBACK_URL,
@@ -182,7 +185,7 @@ export class Auth {
 
   async googleCallback(code: string) {
     const { data, error } =
-      await this.supabase.auth.exchangeCodeForSession(code);
+      await this.supabase.getAnon().auth.exchangeCodeForSession(code);
     if (error) {
       throw error;
     }
@@ -193,7 +196,7 @@ export class Auth {
     // Note: Since you're using statless JWTs, cookies handle the real frontend logout.
     // However, if the user signed in through Google OAuth, signing out from Supabase 
     // ensures their backend session is properly killed as well!
-    const { error } = await this.supabase.auth.signOut();
+    const { error } = await this.supabase.getAnon().auth.signOut();
     if (error) {
       console.error('Error during Supabase sign-out:', error.message);
     }

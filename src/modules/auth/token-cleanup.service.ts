@@ -1,13 +1,13 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseService } from 'src/supabase/supabase';
 
 @Injectable()
 export class TokenCleanupService {
   private readonly logger = new Logger(TokenCleanupService.name);
 
   constructor(
-    @Inject('SUPABASE_CLIENT') private readonly supabase: SupabaseClient,
+    private readonly supabase: SupabaseService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -19,6 +19,7 @@ export class TokenCleanupService {
     // Delete tokens that are either explicitly verified, 
     // or pending but past their expiration time
     const { data, error } = await this.supabase
+      .getAnon()
       .from('verification_tokens')
       .delete()
       .or(`status.eq.verified,and(status.eq.pending,expires_at.lt.${now})`);

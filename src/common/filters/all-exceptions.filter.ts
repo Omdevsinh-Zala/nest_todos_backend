@@ -1,17 +1,20 @@
 import {
   ExceptionFilter,
   Catch,
-  ArgumentsHost,
   HttpException,
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import * as Sentry from "@sentry/node";
+import type { ArgumentsHost } from '@nestjs/common';
 import type { Response } from 'express';
+import { SentryExceptionCaptured } from '@sentry/nestjs';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
-
+  
+  @SentryExceptionCaptured()
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -35,6 +38,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       `[${statusCode}] ${Array.isArray(message) ? message.join(', ') : message}`,
       exception instanceof Error ? exception.stack : undefined,
     );
+
+    Sentry.captureException(exception);
 
     response.status(statusCode).json({
       statusCode,

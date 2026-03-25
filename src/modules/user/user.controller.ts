@@ -8,14 +8,16 @@ import {
   Post,
   UseGuards,
   Req,
+  Res,
 } from '@nestjs/common';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 import { UserService } from './user.service';
-import { AuthGuard } from 'src/guards/auth.guard';
-import type { UpdateUser } from 'src/interfaces/user.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { User } from 'src/interfaces/user.interface';
 
 @Controller('/api/v1/users')
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -26,28 +28,33 @@ export class UserController {
   //   return (req as any).user;
   // }
 
-  @Get()
-  getAll() {
-    return this.userService.getAllUsers();
+  // @Get()
+  // getAll() {
+  //   return this.userService.getAllUsers();
+  // }
+
+  @Get('')
+  getOne(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    const user = req['user'] as any;
+    return this.userService.getUserData(user.token, user.sub);
   }
 
-  @Get(':id')
-  getOne(@Param('id') id: string) {
-    return this.userService.getUserById(id);
+  @Patch('')
+  updateUser(
+    @Req() req: Request,
+    @Body() body: UpdateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = req['user'] as any;
+    return this.userService.updateUser(user.token, user.sub, body);
   }
 
-  @Post()
-  createUser(@Body() user: any) {
-    return this.userService.createUser(user);
-  }
-
-  @Delete(':id')
-  removeUser(@Param('id') id: string) {
-    return this.userService.removeUser(id);
-  }
-
-  @Patch(':id')
-  updateUser(@Param('id') id: string, @Body() user: UpdateUser) {
-    return this.userService.updateUser(id, user);
+  @Delete('')
+  deleteUser(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = req['user'] as any;
+    return this.userService.deleteUser(user.token, user.sub);
   }
 }
