@@ -23,7 +23,8 @@ CREATE TABLE public.users (
   is_verified    BOOLEAN DEFAULT false NOT NULL,
   ip_address     TEXT,
   created_at     TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
-  updated_at     TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+  updated_at     TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+  deleted_at     TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
 -- ======================================================
@@ -40,6 +41,21 @@ CREATE VIEW public.users_view AS
 
 CREATE INDEX idx_users_email      ON public.users (email);
 CREATE INDEX idx_users_created_at ON public.users (created_at);
+
+-- ======================================================
+-- TRIGGER — soft delete user
+-- ======================================================
+
+CREATE OR REPLACE FUNCTION soft_delete_user()
+  RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+  AS $$
+  BEGIN
+    UPDATE public.users
+    SET deleted_at = now()
+    WHERE id = auth.uid()
+      AND deleted_at IS NULL;
+  END;
+  $$;
 
 -- ======================================================
 -- TRIGGER — auto-update updated_at (shared across all tables)

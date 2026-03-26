@@ -19,11 +19,9 @@ CREATE TYPE todo_priority AS ENUM ('none', 'low', 'medium', 'high', 'urgent');
 CREATE TABLE public.tags (
   id         UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name       TEXT NOT NULL CHECK (char_length(name) BETWEEN 1 AND 100),
-  color      TEXT,
+  color      TEXT DEFAULT '#000000',
+  is_pinned  BOOLEAN DEFAULT false,
   user_id    UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  created_by UUID NOT NULL REFERENCES public.users(id),
-  updated_by UUID REFERENCES public.users(id),
-  deleted_by UUID REFERENCES public.users(id),
   deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -38,6 +36,21 @@ CREATE TRIGGER update_tags_updated_at
   BEFORE UPDATE ON public.tags
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
+
+CREATE OR REPLACE FUNCTION soft_delete_tag(tag_id UUID)
+  RETURNS void
+  LANGUAGE plpgsql
+  SECURITY DEFINER
+  SET search_path = public
+  AS $$
+  BEGIN
+    UPDATE public.tags
+    SET deleted_at = now()
+    WHERE id = tag_id
+      AND user_id = auth.uid()
+      AND deleted_at IS NULL;
+  END;
+  $$;
 
 ALTER TABLE public.tags ENABLE ROW LEVEL SECURITY;
 
@@ -155,6 +168,21 @@ CREATE TRIGGER set_todo_position
   FOR EACH ROW
   EXECUTE FUNCTION auto_set_todo_position();
 
+CREATE OR REPLACE FUNCTION soft_delete_todo(todo_id UUID)
+  RETURNS void
+  LANGUAGE plpgsql
+  SECURITY DEFINER
+  SET search_path = public
+  AS $$
+  BEGIN
+    UPDATE public.todos
+    SET deleted_at = now()
+    WHERE id = todo_id
+      AND user_id = auth.uid()  -- still enforces ownership
+      AND deleted_at IS NULL;   -- prevent double-delete
+  END;
+  $$;
+
 -- ---- RLS ----
 
 ALTER TABLE public.todos ENABLE ROW LEVEL SECURITY;
@@ -185,17 +213,37 @@ CREATE TABLE public.todo_tags (
   todo_id    UUID NOT NULL REFERENCES public.todos(id) ON DELETE CASCADE,
   tag_id     UUID NOT NULL REFERENCES public.tags(id)  ON DELETE CASCADE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   PRIMARY KEY (todo_id, tag_id)
 );
 
 CREATE INDEX idx_todo_tags_todo_id ON public.todo_tags (todo_id);
 CREATE INDEX idx_todo_tags_tag_id  ON public.todo_tags (tag_id);
+CREATE INDEX idx_todo_tags_deleted_at ON public.todo_tags (deleted_at);
+
+CREATE OR REPLACE FUNCTION soft_delete_todo_tag(p_todo_id UUID, p_tag_id UUID)
+  RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
+  AS $$
+  BEGIN
+    UPDATE public.todo_tags
+    SET deleted_at = now()
+    WHERE todo_id = p_todo_id
+      AND tag_id = p_tag_id
+      AND deleted_at IS NULL
+      AND EXISTS (
+        SELECT 1 FROM public.todos
+        WHERE todos.id = p_todo_id
+          AND todos.user_id = auth.uid()
+      );
+  END;
+  $$;
 
 ALTER TABLE public.todo_tags ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own todo_tags"
   ON public.todo_tags FOR SELECT
   USING (
+    deleted_at IS NULL AND
     EXISTS (
       SELECT 1 FROM public.todos
       WHERE todos.id = todo_tags.todo_id

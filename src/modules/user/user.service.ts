@@ -34,9 +34,7 @@ export class UserService {
     try {
       const { data, error } = await this.supabase
         .forUser(token)
-        .from('users')
-        .delete()
-        .eq('id', id);
+        .rpc('soft_delete_user', { id: id });
       return "User deleted successfully";
     } catch (error) {
       throw error;
