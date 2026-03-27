@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Res, Query, Body, Req, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Res,
+  Query,
+  Body,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import type { Response, Request } from 'express';
 import { Auth } from './auth';
 import { RegisterDto } from './dto/register.dto';
@@ -12,8 +21,9 @@ export class AuthController {
   async register(@Body() body: RegisterDto, @Req() req: Request) {
     delete body.confirm_password;
     // Extract IP address from request
-    const ip_address = (req.headers['x-forwarded-for'] as string) || req.ip || '';
-    
+    const ip_address =
+      (req.headers['x-forwarded-for'] as string) || req.ip || '';
+
     const userData = await this.authService.register({ ...body, ip_address });
     return userData;
   }
@@ -28,8 +38,9 @@ export class AuthController {
     @Body() body: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { user, access_token, refresh_token } = await this.authService.login(body);
-    
+    const { user, access_token, refresh_token } =
+      await this.authService.login(body);
+
     res.cookie('access_token', access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -43,12 +54,15 @@ export class AuthController {
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
-    
+
     return user;
   }
 
   @Post('/refresh')
-  async refreshTokens(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async refreshTokens(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     // Attempt to extract the refresh token (checks properly for cookies if configured)
     const cookieHeader = req.headers.cookie;
     let refresh_token: string | undefined;
@@ -56,11 +70,14 @@ export class AuthController {
     if (req.cookies && req.cookies['refresh_token']) {
       refresh_token = req.cookies['refresh_token'];
     } else if (cookieHeader) {
-      const parsedCookies = cookieHeader.split(';').reduce((acc, cookie) => {
-        const [key, value] = cookie.trim().split('=');
-        acc[key] = value;
-        return acc;
-      }, {} as Record<string, string>);
+      const parsedCookies = cookieHeader.split(';').reduce(
+        (acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
       refresh_token = parsedCookies['refresh_token'];
     }
 
@@ -90,7 +107,7 @@ export class AuthController {
   @Post('/logout')
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const access_token = req.cookies?.['access_token'];
-    
+
     // Call the service with the active token if additional tracking is needed
     if (access_token) {
       await this.authService.logout(access_token);

@@ -19,7 +19,7 @@ import { CreateTodoDto, UpdateTodoDto } from './dto/todo.dto';
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
-//   Todo Routes
+  //   Todo Routes
   @Get()
   async getAllTodos(
     @Req() req: Request,
@@ -60,7 +60,7 @@ export class TodoController {
     return this.todoService.deleteTodo(user.token, id);
   }
 
-//   Tag Routes
+  //   Tag Routes
 
   @Post(':id/tag')
   async addTag(

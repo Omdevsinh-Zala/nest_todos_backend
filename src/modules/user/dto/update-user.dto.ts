@@ -19,27 +19,36 @@ export class UpdateUserDto {
 
   @IsString()
   @IsOptional()
-  @Matches(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/, {
-    message: 'password should contain at least one special character',
-  })
+  @Matches(
+    /^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
+    {
+      message: 'password should contain at least one special character',
+    },
+  )
   @IsPresent('new_password')
   @IsPresent('confirm_password')
   old_password?: string;
 
   @IsString()
   @IsOptional()
-  @Matches(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/, {
-    message: 'password should contain at least one special character',
-  })
+  @Matches(
+    /^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
+    {
+      message: 'password should contain at least one special character',
+    },
+  )
   @IsPresent('old_password')
   @IsPresent('confirm_password')
   new_password?: string;
 
   @IsString()
   @IsOptional()
-  @Matches(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/, {
-    message: 'password should contain at least one special character',
-  })
+  @Matches(
+    /^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
+    {
+      message: 'password should contain at least one special character',
+    },
+  )
   @IsPresent('old_password')
   @IsPresent('new_password')
   @Match('new_password')

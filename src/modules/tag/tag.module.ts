@@ -5,6 +5,6 @@ import { SupabaseService } from '../../supabase/supabase';
 
 @Module({
   controllers: [TagController],
-  providers: [TagService, SupabaseService]
+  providers: [TagService, SupabaseService],
 })
 export class TagModule {}

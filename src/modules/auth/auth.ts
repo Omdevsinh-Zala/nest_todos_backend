@@ -97,9 +97,12 @@ export class Auth {
 
     // Generate JWT tokens
     const payload = { sub: safeUser.id, email: safeUser.email };
-    const access_token = await this.jwtService.signAsync({...payload, role: 'authenticated'}, {
-      expiresIn: '1h',
-    });
+    const access_token = await this.jwtService.signAsync(
+      { ...payload, role: 'authenticated' },
+      {
+        expiresIn: '1h',
+      },
+    );
     const refresh_token = await this.jwtService.signAsync(
       { ...payload, type: 'refresh' },
       { expiresIn: '1d' },
@@ -117,9 +120,12 @@ export class Auth {
       }
 
       const userPayload = { sub: payload.sub, email: payload.email };
-      const access_token = await this.jwtService.signAsync({...userPayload, role: 'authenticated'}, {
-        expiresIn: '1h',
-      });
+      const access_token = await this.jwtService.signAsync(
+        { ...userPayload, role: 'authenticated' },
+        {
+          expiresIn: '1h',
+        },
+      );
       const refresh_token = await this.jwtService.signAsync(
         { ...userPayload, type: 'refresh' },
         { expiresIn: '1d' },
@@ -136,10 +142,9 @@ export class Auth {
 
   async verifyEmailToken(token: string) {
     // Check if token exists, is pending, and not expired
-    const { data: verified, error } = await this.supabase.getAnon().rpc(
-      'verify_email_token',
-      { p_token: token },
-    );
+    const { data: verified, error } = await this.supabase
+      .getAnon()
+      .rpc('verify_email_token', { p_token: token });
 
     if (error) {
       throw new Error('Verification failed');
@@ -184,8 +189,9 @@ export class Auth {
   }
 
   async googleCallback(code: string) {
-    const { data, error } =
-      await this.supabase.getAnon().auth.exchangeCodeForSession(code);
+    const { data, error } = await this.supabase
+      .getAnon()
+      .auth.exchangeCodeForSession(code);
     if (error) {
       throw error;
     }
@@ -194,7 +200,7 @@ export class Auth {
 
   async logout(token: string) {
     // Note: Since you're using statless JWTs, cookies handle the real frontend logout.
-    // However, if the user signed in through Google OAuth, signing out from Supabase 
+    // However, if the user signed in through Google OAuth, signing out from Supabase
     // ensures their backend session is properly killed as well!
     const { error } = await this.supabase.getAnon().auth.signOut();
     if (error) {
