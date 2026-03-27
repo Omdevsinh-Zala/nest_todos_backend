@@ -17,7 +17,8 @@ export class MailService {
   }
 
   async sendVerificationEmail(to: string, token: string) {
-    const frontendBaseUrl = process.env.FRONTEND_BASE_URL || 'http://localhost:3000';
+    const frontendBaseUrl =
+      process.env.FRONTEND_BASE_URL || 'http://localhost:3000';
     const verifyUrl = `${frontendBaseUrl}/verify-email?token=${token}`;
 
     const mailOptions: nodemailer.SendMailOptions = {
@@ -39,7 +40,7 @@ export class MailService {
     try {
       const info = await this.transporter.sendMail(mailOptions);
       console.log('Verification email sent: %s', info.messageId);
-      
+
       // If using ethereal email, this prints a link to preview the message
       if (process.env.SMTP_HOST === 'smtp.ethereal.email') {
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));

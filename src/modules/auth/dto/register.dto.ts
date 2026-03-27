@@ -1,12 +1,18 @@
-import { IsEmail, IsNotEmpty, IsString, Matches, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
 import { Match } from './match.decorator';
 
 export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^[a-zA-Z\s]*$/, {
-      message: 'first name should not contain numbers or special characters',
-    })
+    message: 'first name should not contain numbers or special characters',
+  })
   first_name: string;
 
   @IsString()

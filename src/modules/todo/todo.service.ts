@@ -11,7 +11,9 @@ export class TodoService {
     const { data, error } = await this.supabase
       .forUser(token)
       .from('todos')
-      .select('id, title, description, status, priority, due_date, reminder_at, completed_at, position, bg_color, parent_id, todo_tags(tags(id, name, color))')
+      .select(
+        'id, title, description, status, priority, due_date, reminder_at, completed_at, position, bg_color, parent_id, todo_tags(tags(id, name, color))',
+      )
       .eq('user_id', id)
       .order('position', { ascending: true });
 
@@ -30,24 +32,29 @@ export class TodoService {
       .single();
 
     if (error) {
-      console.log(error)
+      console.log(error);
       throw error;
     }
     return data;
   }
 
-  async updateTodo(token: string, user_id: string, id: string, todo: UpdateTodoDto) {
-    const todoData = {...todo, user_id: user_id};
+  async updateTodo(
+    token: string,
+    user_id: string,
+    id: string,
+    todo: UpdateTodoDto,
+  ) {
+    const todoData = { ...todo, user_id: user_id };
 
-    if(todoData.status === 'completed' && todoData.completed_at) {
-      throw new Error("Completed tasks cannot be edited.");
+    if (todoData.status === 'completed' && todoData.completed_at) {
+      throw new Error('Completed tasks cannot be edited.');
     }
 
-    if(todo.status === 'completed' && !todo.completed_at){
+    if (todo.status === 'completed' && !todo.completed_at) {
       todoData.completed_at = new Date().toISOString();
     }
 
-    if(todo.status !== 'completed' && todo.completed_at){
+    if (todo.status !== 'completed' && todo.completed_at) {
       todoData.completed_at = undefined;
     }
 
@@ -79,14 +86,14 @@ export class TodoService {
       .rpc('soft_delete_todo', { todo_id: id });
 
     if (error) {
-      console.log(error)
+      console.log(error);
       throw error;
     }
 
     return 'Todo deleted successfully';
   }
 
-  // Tags 
+  // Tags
 
   async addTag(token: string, tag_id: string, todo_id: string) {
     const { data, error } = await this.supabase
@@ -97,7 +104,7 @@ export class TodoService {
       .single();
 
     if (error) {
-      console.log(error)
+      console.log(error);
       throw error;
     }
     return data;
@@ -109,7 +116,7 @@ export class TodoService {
       .rpc('soft_delete_todo_tag', { todo_id: todo_id, tag_id: tag_id });
 
     if (error) {
-      console.log(error)
+      console.log(error);
       throw error;
     }
     return 'Tag removed successfully';

@@ -4,9 +4,7 @@ import { SupabaseService } from '../../supabase/supabase';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly supabase: SupabaseService,
-  ) {}
+  constructor(private readonly supabase: SupabaseService) {}
 
   USER_FIELDS =
     'id, email, first_name, last_name, login_provider, providers, avatar_url, is_verified, created_at, updated_at';
@@ -35,7 +33,7 @@ export class UserService {
       const { data, error } = await this.supabase
         .forUser(token)
         .rpc('soft_delete_user', { id: id });
-      return "User deleted successfully";
+      return 'User deleted successfully';
     } catch (error) {
       throw error;
     }

@@ -8,7 +8,7 @@ export class SupabaseService {
   constructor() {
     this.anonClient = createClient(
       process.env.SUPABASE_URL!,
-      process.env.SUPABASE_KEY!
+      process.env.SUPABASE_KEY!,
     );
   }
 
@@ -20,17 +20,13 @@ export class SupabaseService {
   // For authenticated operations (update, todos, tags etc.)
   // Creates a lightweight scoped client reusing the same config
   forUser(accessToken: string): SupabaseClient {
-    return createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_KEY!,
-      {
-        global: {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-        auth: {
-          persistSession: false,  // ← important, don't cache user sessions
-        },
-      }
-    );
+    return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_KEY!, {
+      global: {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+      auth: {
+        persistSession: false, // ← important, don't cache user sessions
+      },
+    });
   }
 }

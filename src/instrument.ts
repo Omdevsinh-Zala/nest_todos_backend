@@ -1,13 +1,11 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ quiet: true });
-import * as Sentry from "@sentry/nestjs"
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
+import * as Sentry from '@sentry/nestjs';
+import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
-  integrations: [
-    nodeProfilingIntegration(),
-  ],
+  integrations: [nodeProfilingIntegration()],
 
   // Send structured logs to Sentry
   enableLogs: true,
@@ -24,8 +22,11 @@ Sentry.init({
 
 // Profiling happens automatically after setting it up with `Sentry.init()`.
 // All spans (unless those discarded by sampling) will have profiling data attached to them.
-Sentry.startSpan({
-  name: "My Span",
-}, () => {
-  // The code executed here will be profiled
-});
+Sentry.startSpan(
+  {
+    name: 'My Span',
+  },
+  () => {
+    // The code executed here will be profiled
+  },
+);
