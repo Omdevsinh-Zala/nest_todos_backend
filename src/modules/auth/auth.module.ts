@@ -3,10 +3,10 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { Auth } from './auth';
 import { AuthController } from './auth.controller';
-import { SupabaseModule } from 'src/supabase/supabase.module';
+import { SupabaseModule } from '../../supabase/supabase.module';
 import { MailService } from './mail.service';
 import { TokenCleanupService } from './token-cleanup.service';
-import { SupabaseService } from 'src/supabase/supabase';
+import { SupabaseService } from '../../supabase/supabase';
 
 @Module({
   imports: [
@@ -14,11 +14,17 @@ import { SupabaseService } from 'src/supabase/supabase';
     JwtModule.registerAsync({
       global: true,
       useFactory: async () => ({
-        privateKey: fs.readFileSync(process.env.PRIVATE_KEY_PATH || ''), // sign with private key
-        publicKey: fs.readFileSync(process.env.PUBLIC_KEY_PATH || ''), // verify with public key
+        privateKey:
+          process.env.NODE_ENV === 'production'
+            ? process.env.PRIVATE_KEY?.replace(/\\n/g, '\n')
+            : fs.readFileSync(process.env.PRIVATE_KEY_PATH || ''), // sign with private key
+        publicKey:
+          process.env.NODE_ENV === 'production'
+            ? process.env.PUBLIC_KEY?.replace(/\\n/g, '\n')
+            : fs.readFileSync(process.env.PUBLIC_KEY_PATH || ''), // verify with public key
         signOptions: {
           algorithm: 'RS256',
-          keyid: (process.env.JWT_KEY_ID)?.toString(),
+          keyid: process.env.JWT_KEY_ID?.toString(),
         },
       }),
     }),

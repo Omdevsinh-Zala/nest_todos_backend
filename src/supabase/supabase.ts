@@ -1,4 +1,3 @@
-// supabase/supabase.service.ts
 import { Injectable } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 

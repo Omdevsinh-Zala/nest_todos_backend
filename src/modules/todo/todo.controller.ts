@@ -10,7 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { TodoService } from './todo.service';
 import { CreateTodoDto, UpdateTodoDto } from './dto/todo.dto';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Todo } from '../../interfaces/todo.interface';
-import { SupabaseService } from 'src/supabase/supabase';
+import { SupabaseService } from '../../supabase/supabase';
 import { CreateTodoDto, UpdateTodoDto } from './dto/todo.dto';
 
 @Injectable()

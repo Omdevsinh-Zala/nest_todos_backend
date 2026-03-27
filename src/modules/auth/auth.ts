@@ -1,11 +1,11 @@
 import { Inject, Injectable, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Login, Register } from 'src/interfaces/auth.interface';
-import { AppError } from 'src/common/errors/app.error';
+import { Login, Register } from '../../interfaces/auth.interface';
+import { AppError } from '../../common/errors/app.error';
 import { MailService } from './mail.service';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { SupabaseService } from 'src/supabase/supabase';
+import { SupabaseService } from '../../supabase/supabase';
 
 @Injectable()
 export class Auth {

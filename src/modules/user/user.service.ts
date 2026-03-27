@@ -1,6 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UpdateUser } from 'src/interfaces/user.interface';
-import { SupabaseService } from 'src/supabase/supabase';
+import { Injectable } from '@nestjs/common';
+import { UpdateUser } from '../../interfaces/user.interface';
+import { SupabaseService } from '../../supabase/supabase';
 
 @Injectable()
 export class UserService {

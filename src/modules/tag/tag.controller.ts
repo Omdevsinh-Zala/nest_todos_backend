@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { CreateTagDto, UpdateTagDto } from './dto/tag.dto';
 import { TagService } from './tag.service';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('/api/v1/tags')
 @UseGuards(JwtAuthGuard)

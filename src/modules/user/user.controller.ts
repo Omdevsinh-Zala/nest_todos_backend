@@ -13,8 +13,7 @@ import {
 import type { Request, Response } from 'express';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { User } from 'src/interfaces/user.interface';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 
 @Controller('/api/v1/users')
 @UseGuards(JwtAuthGuard)
