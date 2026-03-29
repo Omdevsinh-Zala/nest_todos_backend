@@ -13,7 +13,7 @@ export class Auth {
     private readonly supabase: SupabaseService,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   USER_PUBLIC_FIELDS =
     'id, email, first_name, last_name, login_provider, providers, avatar_url, is_verified, created_at, updated_at';
@@ -34,6 +34,7 @@ export class Auth {
       .single();
 
     if (error) {
+      console.log(error)
       if (error.code === '23505') {
         throw new AppError('Email already exists', HttpStatus.CONFLICT);
       }
