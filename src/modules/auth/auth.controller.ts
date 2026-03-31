@@ -28,10 +28,10 @@ export class AuthController {
     return userData;
   }
 
-  @Get('/verify-email')
-  async verifyEmail(@Query('token') token: string) {
-    return this.authService.verifyEmailToken(token);
-  }
+  // @Get('/verify-email')
+  // async verifyEmail(@Query('token') token: string) {
+  //   return this.authService.verifyEmailToken(token);
+  // }
 
   @Post('/login')
   async login(
@@ -119,28 +119,28 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
-  @Get('/signup/google')
-  async signUp(@Res() res: Response) {
-    const data = await this.authService.signUp();
-    return res.redirect(data.url);
-  }
+  // @Get('/signup/google')
+  // async signUp(@Res() res: Response) {
+  //   const data = await this.authService.signUp();
+  //   return res.redirect(data.url);
+  // }
 
-  @Get('/signin/google')
-  async signIn(@Res() res: Response) {
-    const data = await this.authService.signIn();
-    return res.redirect(data.url);
-  }
+  // @Get('/signin/google')
+  // async signIn(@Res() res: Response) {
+  //   const data = await this.authService.signIn();
+  //   return res.redirect(data.url);
+  // }
 
-  @Get('/callback')
-  async googleCallback(@Query('code') code: string, @Res() res: Response) {
-    if (code) {
-      const data = await this.authService.googleCallback(code);
-      res.cookie('access_token', data.session.access_token, { httpOnly: true });
-      return res.redirect(`${process.env.FRONTEND_REDIRECTION_URL}`);
-    }
+  // @Get('/callback')
+  // async googleCallback(@Query('code') code: string, @Res() res: Response) {
+  //   if (code) {
+  //     const data = await this.authService.googleCallback(code);
+  //     res.cookie('access_token', data.session.access_token, { httpOnly: true });
+  //     return res.redirect(`${process.env.FRONTEND_REDIRECTION_URL}`);
+  //   }
 
-    return res.redirect(
-      `${process.env.FRONTEND_BASE_URL}/login?error=InvalidAuth`,
-    );
-  }
+  //   return res.redirect(
+  //     `${process.env.FRONTEND_BASE_URL}/login?error=InvalidAuth`,
+  //   );
+  // }
 }

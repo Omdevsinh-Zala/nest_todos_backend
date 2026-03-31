@@ -28,7 +28,7 @@ export class Auth {
         password: hashedPassword,
         login_provider: 'email',
         providers: ['email'],
-        is_verified: false,
+        is_verified: true,
       })
       .select(this.USER_PUBLIC_FIELDS)
       .single();
@@ -42,26 +42,26 @@ export class Auth {
     }
 
     // Generate Verification Token
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 30); // 30 minutes from now
+    // const token = crypto.randomBytes(32).toString('hex');
+    // const expiresAt = new Date();
+    // expiresAt.setMinutes(expiresAt.getMinutes() + 30); // 30 minutes from now
 
     // Insert Token
-    const { error: tokenError } = await this.supabase
-      .getAnon()
-      .from('verification_tokens')
-      .insert({
-        user_id: (data as any).id,
-        token: token,
-        expires_at: expiresAt.toISOString(),
-      });
+    // const { error: tokenError } = await this.supabase
+    //   .getAnon()
+    //   .from('verification_tokens')
+    //   .insert({
+    //     user_id: (data as any).id,
+    //     token: token,
+    //     expires_at: expiresAt.toISOString(),
+    //   });
 
-    if (tokenError) {
-      throw new AppError(
-        'Failed to generate verification token',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    // if (tokenError) {
+    //   throw new AppError(
+    //     'Failed to generate verification token',
+    //     HttpStatus.INTERNAL_SERVER_ERROR,
+    //   );
+    // }
 
     // Send Verification Email
     // await this.mailService.sendVerificationEmail(user.email, token);

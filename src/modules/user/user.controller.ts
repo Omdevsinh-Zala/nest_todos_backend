@@ -32,34 +32,31 @@ export class UserController {
   //   return this.userService.getAllUsers();
   // }
 
-  @Get(':id')
+  @Get('')
   getOne(
     @Req() req: Request,
-    @Param() id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
     const user = req['user'] as any;
-    return this.userService.getUserData(user.token, id);
+    return this.userService.getUserData(user.token, user.sub);
   }
 
-  @Patch(':id')
+  @Patch('')
   updateUser(
     @Req() req: Request,
-    @Param('id') id: string,
     @Body() body: UpdateUserDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     const user = req['user'] as any;
-    return this.userService.updateUser(user.token, id, body);
+    return this.userService.updateUser(user.token, user.sub, body);
   }
 
-  @Delete(':id')
+  @Delete('')
   deleteUser(
     @Req() req: Request,
-    @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
     const user = req['user'] as any;
-    return this.userService.deleteUser(user.token, id);
+    return this.userService.deleteUser(user.token, user.sub);
   }
 }

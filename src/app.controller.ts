@@ -13,11 +13,11 @@ export class AppController {
   @Get('/favicon.ico')
   @HttpCode(204)
   getFavicon() {
-    return;
+    return '';
   }
 
-  @Get('/debug-sentry')
-  getError() {
-    throw new Error('My first Sentry error!');
-  }
+  // @Get('/debug-sentry')
+  // getError() {
+  //   throw new Error('My first Sentry error!');
+  // }
 }
