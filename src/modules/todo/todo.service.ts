@@ -113,7 +113,7 @@ export class TodoService {
   async removeTag(token: string, todo_id: string, tag_id: string) {
     const { data, error } = await this.supabase
       .forUser(token)
-      .rpc('soft_delete_todo_tag', { todo_id: todo_id, tag_id: tag_id });
+      .rpc('soft_delete_todo_tag', { p_todo_id: todo_id, p_tag_id: tag_id });
 
     if (error) {
       console.log(error);
