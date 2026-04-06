@@ -1,16 +1,13 @@
 import fs from 'fs';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { Auth } from './auth';
+import { Auth } from './auth.service';
 import { AuthController } from './auth.controller';
-import { SupabaseModule } from '../../supabase/supabase.module';
 import { MailService } from './mail.service';
 import { TokenCleanupService } from './token-cleanup.service';
-import { SupabaseService } from '../../supabase/supabase';
 
 @Module({
   imports: [
-    SupabaseModule,
     JwtModule.registerAsync({
       global: true,
       useFactory: async () => ({
@@ -29,7 +26,7 @@ import { SupabaseService } from '../../supabase/supabase';
       }),
     }),
   ],
-  providers: [Auth, MailService, TokenCleanupService, SupabaseService],
+  providers: [Auth, MailService, TokenCleanupService],
   controllers: [AuthController],
 })
 export class AuthModule {}
