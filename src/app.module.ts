@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { SentryModule } from '@sentry/nestjs/setup';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SupabaseModule } from './supabase/supabase.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
@@ -17,6 +18,13 @@ import { TagModule } from './modules/tag/tag.module';
       expandVariables: true,
     }),
     ScheduleModule.forRoot(),
+    SupabaseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        supabaseUrl: config.get<string>('SUPABASE_URL') || '',
+        supabaseKey: config.get<string>('SUPABASE_KEY') || '',
+      }),
+    }),
     UserModule,
     TodoModule,
     AuthModule,

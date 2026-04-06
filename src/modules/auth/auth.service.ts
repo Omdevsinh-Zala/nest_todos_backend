@@ -5,7 +5,7 @@ import { AppError } from '../../common/errors/app.error';
 import { MailService } from './mail.service';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { SupabaseService } from '../../supabase/supabase';
+import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
 export class Auth {
