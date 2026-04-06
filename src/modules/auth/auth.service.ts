@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Login, Register } from '../../interfaces/auth.interface';
 import { AppError } from '../../common/errors/app.error';
 import { MailService } from './mail.service';
+import * as bcrypt from 'bcrypt';
 import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
