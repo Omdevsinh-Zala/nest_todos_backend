@@ -1,10 +1,9 @@
-import { Inject, Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Login, Register } from '../../interfaces/auth.interface';
 import { AppError } from '../../common/errors/app.error';
 import { MailService } from './mail.service';
-import * as crypto from 'crypto';
-import * as bcrypt from 'bcrypt';
+import { hash } from 'bcrypt';
 import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
@@ -34,7 +33,6 @@ export class Auth {
       .single();
 
     if (error) {
-      console.log(error)
       if (error.code === '23505') {
         throw new AppError('Email already exists', HttpStatus.CONFLICT);
       }
@@ -94,7 +92,7 @@ export class Auth {
     }
 
     // Step 4 — return safe user object and generated JWT tokens
-    const { password, ip_address, ...safeUser } = data;
+    const { password: _password, ip_address: _ip_address, ...safeUser } = data;
 
     // Generate JWT tokens
     const payload = { sub: safeUser.id, email: safeUser.email };
@@ -199,7 +197,7 @@ export class Auth {
     return data; // Contains session and user
   }
 
-  async logout(token: string) {
+  async logout() {
     // Note: Since you're using statless JWTs, cookies handle the real frontend logout.
     // However, if the user signed in through Google OAuth, signing out from Supabase
     // ensures their backend session is properly killed as well!
@@ -209,7 +207,7 @@ export class Auth {
     }
   }
 
-  SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS!;
+  SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS ? process.env.BCRYPT_SALT_ROUNDS : '10';
 
   hashPassword = async (plain: string): Promise<string> => {
     return await bcrypt.hash(plain, Number(this.SALT_ROUNDS));

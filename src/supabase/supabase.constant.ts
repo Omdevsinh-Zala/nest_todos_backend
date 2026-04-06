@@ -6,9 +6,9 @@ export interface SupabaseModuleOptions {
 }
 
 export interface SupabaseModuleAsyncOptions {
-  imports?: any[];
-  inject?: any[];
+  imports?: unknown[];
+  inject?: unknown[];
   useFactory: (
-    ...args: any[]
+    ...args: unknown[]
   ) => Promise<SupabaseModuleOptions> | SupabaseModuleOptions;
 }
